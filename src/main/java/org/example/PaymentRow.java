@@ -12,8 +12,9 @@ import lombok.*;
 public class PaymentRow {
 
     private Long id;
+    private int clientId;
     private String name;
     private String address;
-    private int amount;
     private Date period;
+    private Long amount;
 }

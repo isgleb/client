@@ -49,7 +49,7 @@ public class FormController implements Initializable {
     private void saveChanges() {
 
         payment = HttpController.savePayment(payment);
-        expenses.forEach(expense -> expense.paymentId = payment.getId());
+        expenses.forEach(expense -> expense.paymentId =  payment.getId());
         HttpController.saveExpenses(expenses);
 
     }
@@ -58,9 +58,21 @@ public class FormController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         Long id = 1L;
 
-        HttpController.getPayment(id);
+        try {
+            payment = HttpController.getPayment(id);
 
-        HttpController.getExpenses(id);
+            clientId.setText(String.valueOf(payment.getClientId()));
+            ownersName.setText(payment.getOwnerName());
+            address.setText(payment.getAddress());
+
+            HttpController.getExpenses(payment.getId());
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//        HttpController.getExpenses(id);
     }
 
 

@@ -14,17 +14,18 @@ import org.example.Payment;
 import org.example.PaymentRow;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 public class HttpController {
 
+    private static String baseUrl = "http://localhost:8080";
+
     public static ObservableList<PaymentRow> getPaymentRows() throws IOException {
 
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
 
-        HttpGet httpget = new HttpGet("http://localhost:8080/payments-row-dtos");
-        HttpResponse httpresponse = httpclient.execute(httpget);
+        HttpGet httpget = new HttpGet(baseUrl + "/payments-row-dtos");
+        HttpResponse httpresponse = httpClient.execute(httpget);
         HttpEntity httpEntity = httpresponse.getEntity();
 
         String responseString = EntityUtils.toString(httpEntity, "UTF-8");
@@ -35,6 +36,8 @@ public class HttpController {
 
         ObservableList<PaymentRow> observableList = FXCollections.observableArrayList(paymentRows);
 
+        httpClient.close();
+
         return observableList;
     }
 
@@ -43,13 +46,42 @@ public class HttpController {
         System.out.println("Payment deleted");
     }
 
-    public static Payment getPayment(Long id) {
+    public static Payment getPayment(Long id) throws IOException {
 
-        return new Payment();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        HttpGet httpget = new HttpGet(baseUrl + "/payments" + "/" + id);
+        HttpResponse httpresponse = httpClient.execute(httpget);
+        HttpEntity httpEntity = httpresponse.getEntity();
+
+        String responseString = EntityUtils.toString(httpEntity, "UTF-8");
+
+        ObjectMapper mapper = new ObjectMapper();
+        Payment payment = mapper.readValue(responseString, Payment.class);
+
+        httpClient.close();
+
+        return payment;
     }
 
-    public static Expense getExpenses(Long PaymentId) {
-        return new Expense();
+    public static ObservableList<Expense> getExpenses(Long PaymentId) throws IOException {
+
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        HttpGet httpget = new HttpGet(baseUrl + "/expenses" + "/" + PaymentId);
+        HttpResponse httpresponse = httpClient.execute(httpget);
+        HttpEntity httpEntity = httpresponse.getEntity();
+
+        String responseString = EntityUtils.toString(httpEntity, "UTF-8");
+
+        ObjectMapper mapper = new ObjectMapper();
+        Expense[] expenses = mapper.readValue(responseString, Expense[].class);
+
+        httpClient.close();
+
+        ObservableList<Expense> expensesList = FXCollections.observableArrayList(expenses);
+
+        return expensesList;
     }
 
     public static Payment savePayment(Payment payment) {
