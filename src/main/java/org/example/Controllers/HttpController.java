@@ -15,6 +15,7 @@ import org.example.PaymentRow;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class HttpController {
 
@@ -64,7 +65,7 @@ public class HttpController {
         return payment;
     }
 
-    public static ObservableList<Expense> getExpenses(Long PaymentId) throws IOException {
+    public static Map<String,Integer> getExpenses(Long PaymentId) throws IOException {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -75,13 +76,13 @@ public class HttpController {
         String responseString = EntityUtils.toString(httpEntity, "UTF-8");
 
         ObjectMapper mapper = new ObjectMapper();
-        Expense[] expenses = mapper.readValue(responseString, Expense[].class);
+
+
+        Map<String, Integer> map = mapper.readValue(responseString, Map.class);
 
         httpClient.close();
 
-        ObservableList<Expense> expensesList = FXCollections.observableArrayList(expenses);
-
-        return expensesList;
+        return map;
     }
 
     public static Payment savePayment(Payment payment) {

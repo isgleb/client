@@ -3,7 +3,9 @@ package org.example;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,17 +17,25 @@ public class FormController implements Initializable {
     private Long orderId;
 
     private Payment payment;
-    private List<Expense> expenses;
+    private Map<String, Integer> expenses;
 
-    @FXML private TextField clientId;
-    @FXML private TextField ownersName;
-    @FXML private TextField address;
-    @FXML private TextField sum;
+    @FXML
+    private TextField clientId;
+    @FXML
+    private TextField ownersName;
+    @FXML
+    private TextField address;
+    @FXML
+    private TextField sum;
 
-    @FXML private TextField coldWater;
-    @FXML private TextField hotWater;
-    @FXML private TextField electricity;
-    @FXML private TextField repairment;
+    @FXML
+    private TextField coldWater;
+    @FXML
+    private TextField hotWater;
+    @FXML
+    private TextField electricity;
+    @FXML
+    private TextField repairment;
 
 
     @FXML
@@ -47,10 +57,12 @@ public class FormController implements Initializable {
 
     @FXML
     private void saveChanges() {
+//
+//        payment = HttpController.savePayment(payment);
+//        expenses.forEach(expense -> expense.setPaymentId(payment.getId()));
+//        HttpController.saveExpenses(expenses);
 
-        payment = HttpController.savePayment(payment);
-        expenses.forEach(expense -> expense.setPaymentId(payment.getId()));
-        HttpController.saveExpenses(expenses);
+        
 
     }
 
@@ -58,22 +70,32 @@ public class FormController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         Long id = 1L;
 
+
         try {
             payment = HttpController.getPayment(id);
-
-            clientId.setText(String.valueOf(payment.getClientId()));
-            ownersName.setText(payment.getOwnerName());
-            address.setText(payment.getAddress());
-
-            HttpController.getExpenses(payment.getId());
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-//        HttpController.getExpenses(id);
+        clientId.setText(String.valueOf(payment.getClientId()));
+        ownersName.setText(payment.getOwnerName());
+        address.setText(payment.getAddress());
+
+        try {
+            expenses = HttpController.getExpenses(payment.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        coldWater.setText(String.valueOf(expenses.get("cold water")));
+        hotWater.setText(String.valueOf(expenses.get("hot water")));
+        electricity.setText(String.valueOf(expenses.get("electricity")));
+        repairment.setText(String.valueOf(expenses.get("repairment")));
+        int totalSum = 0;
+        for (Map.Entry<String, Integer> pair : expenses.entrySet()) {
+            totalSum += pair.getValue();
+        }
+
+        sum.setText(String.valueOf(totalSum));
     }
-
-
 }
