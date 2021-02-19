@@ -2,6 +2,7 @@ package org.example;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -17,7 +18,7 @@ public class FormController implements Initializable {
     private Long orderId;
 
     private Payment payment;
-    private Map<String, Integer> expenses;
+    private Map<String, Integer> expenses = new HashMap<>();
 
     @FXML
     private TextField clientId;
@@ -62,14 +63,14 @@ public class FormController implements Initializable {
 //        expenses.forEach(expense -> expense.setPaymentId(payment.getId()));
 //        HttpController.saveExpenses(expenses);
 
-        
+
 
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Long id = 1L;
 
+        Long id = 1L;
 
         try {
             payment = HttpController.getPayment(id);
@@ -81,21 +82,18 @@ public class FormController implements Initializable {
         ownersName.setText(payment.getOwnerName());
         address.setText(payment.getAddress());
 
-        try {
-            expenses = HttpController.getExpenses(payment.getId());
-        } catch (IOException e) {
-            e.printStackTrace();
+        int totalSum = 0;
+        for (Expense anExpense : payment.getExpenses()) {
+            expenses.put(anExpense.getName(), anExpense.getAmount());
+            totalSum += anExpense.amount;
         }
+
+        sum.setText(String.valueOf(totalSum));
 
         coldWater.setText(String.valueOf(expenses.get("cold water")));
         hotWater.setText(String.valueOf(expenses.get("hot water")));
         electricity.setText(String.valueOf(expenses.get("electricity")));
         repairment.setText(String.valueOf(expenses.get("repairment")));
-        int totalSum = 0;
-        for (Map.Entry<String, Integer> pair : expenses.entrySet()) {
-            totalSum += pair.getValue();
-        }
 
-        sum.setText(String.valueOf(totalSum));
     }
 }

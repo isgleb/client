@@ -65,32 +65,9 @@ public class HttpController {
         return payment;
     }
 
-    public static Map<String,Integer> getExpenses(Long PaymentId) throws IOException {
-
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-
-        HttpGet httpget = new HttpGet(baseUrl + "/expenses/?paymentId=" + PaymentId);
-        HttpResponse httpresponse = httpClient.execute(httpget);
-        HttpEntity httpEntity = httpresponse.getEntity();
-
-        String responseString = EntityUtils.toString(httpEntity, "UTF-8");
-
-        ObjectMapper mapper = new ObjectMapper();
-
-
-        Map<String, Integer> map = mapper.readValue(responseString, Map.class);
-
-        httpClient.close();
-
-        return map;
-    }
-
     public static Payment savePayment(Payment payment) {
 
         return new Payment();
     }
 
-    public static void saveExpenses(List<Expense> expenseList) {
-
-    }
 }

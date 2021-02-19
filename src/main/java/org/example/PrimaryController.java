@@ -85,10 +85,10 @@ public class PrimaryController implements Initializable {
 
         } catch (IOException ex) {
             System.err.println(ex);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Error");
-            stage.show();
+////            Stage stage = new Stage();
+////            stage.setScene(new Scene(root));
+//            stage.setTitle("Error");
+//            stage.show();
         }
     }
 }
