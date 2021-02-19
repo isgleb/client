@@ -17,6 +17,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import org.example.Controllers.HttpController;
 import org.example.httpClient.WebClient;
 
 public class PrimaryController implements Initializable {
@@ -113,7 +114,11 @@ public class PrimaryController implements Initializable {
         amountColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Integer>("amount"));
         periodColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Date>("period"));
 
-        theTable.setItems(getPayments());
+        try {
+            theTable.setItems(HttpController.getPaymentRows());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
