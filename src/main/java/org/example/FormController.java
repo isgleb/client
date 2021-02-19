@@ -49,7 +49,7 @@ public class FormController implements Initializable {
     private void saveChanges() {
 
         payment = HttpController.savePayment(payment);
-        expenses.forEach(expense -> expense.paymentId =  payment.getId());
+        expenses.forEach(expense -> expense.setPaymentId(payment.getId()));
         HttpController.saveExpenses(expenses);
 
     }

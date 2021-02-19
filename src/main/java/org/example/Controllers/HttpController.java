@@ -68,7 +68,7 @@ public class HttpController {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
-        HttpGet httpget = new HttpGet(baseUrl + "/expenses" + "/" + PaymentId);
+        HttpGet httpget = new HttpGet(baseUrl + "/expenses/?paymentId=" + PaymentId);
         HttpResponse httpresponse = httpClient.execute(httpget);
         HttpEntity httpEntity = httpresponse.getEntity();
 
