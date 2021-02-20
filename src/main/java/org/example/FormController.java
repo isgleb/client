@@ -2,10 +2,7 @@ package org.example;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Stream;
 
 import javafx.fxml.FXML;
@@ -18,7 +15,7 @@ public class FormController implements Initializable {
     private Long orderId;
 
     private Payment payment;
-    private Map<String, Integer> expenses = new HashMap<>();
+    private Map<String, TextField> expenses = new HashMap<>();
 
     @FXML
     private TextField clientId;
@@ -28,6 +25,7 @@ public class FormController implements Initializable {
     private TextField address;
     @FXML
     private TextField sum;
+
 
     @FXML
     private TextField coldWater;
@@ -58,6 +56,33 @@ public class FormController implements Initializable {
 
     @FXML
     private void saveChanges() {
+        payment.setClientId(Integer.parseInt(clientId.getAccessibleText()));
+        payment.setAddress(address.getAccessibleText());
+        payment.setOwnerName(ownersName.getAccessibleText());
+
+        for (Map.Entry<String, TextField> pair : expenses.entrySet()) {
+            int amount = Integer.parseInt(pair.getValue().getAccessibleText());
+            for (Expense expense: payment.getExpenses()) {
+                expense.setAmount(amount);
+            }
+        }
+        try {
+            HttpController.savePayment(payment);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//
+//        expenseList.add(new Expense(payment.getExpenses()
+//                        Integer.getInteger(coldWater.getAccessibleText()))
+//
+//        payment.setExpenses(new ArrayList<Expense>(new Expense(
+//                Integer.getInteger(coldWater.getAccessibleText()),
+//                Integer.getInteger(hotWater.getAccessibleText()),
+//                Integer.getInteger(electricity.getAccessibleText()),
+//                Integer.getInteger(repairment.getAccessibleText()))
+//        ));
+//
+
 //
 //        payment = HttpController.savePayment(payment);
 //        expenses.forEach(expense -> expense.setPaymentId(payment.getId()));
@@ -82,18 +107,24 @@ public class FormController implements Initializable {
         ownersName.setText(payment.getOwnerName());
         address.setText(payment.getAddress());
 
+
+        expenses.put("cold water", coldWater);
+        expenses.put("hot water", hotWater);
+        expenses.put("electricity", coldWater);
+        expenses.put("repairment", repairment);
+
         int totalSum = 0;
         for (Expense anExpense : payment.getExpenses()) {
-            expenses.put(anExpense.getName(), anExpense.getAmount());
+            expenses.get(anExpense.getName()).setText(String.valueOf(anExpense.getAmount()));
             totalSum += anExpense.amount;
         }
 
         sum.setText(String.valueOf(totalSum));
 
-        coldWater.setText(String.valueOf(expenses.get("cold water")));
-        hotWater.setText(String.valueOf(expenses.get("hot water")));
-        electricity.setText(String.valueOf(expenses.get("electricity")));
-        repairment.setText(String.valueOf(expenses.get("repairment")));
+//        coldWater.setText(String.valueOf(expenses.get("cold water").getAmount()));
+//        hotWater.setText(String.valueOf(expenses.get("hot water").getAmount()));
+//        electricity.setText(String.valueOf(expenses.get("electricity").getAmount()));
+//        repairment.setText(String.valueOf(expenses.get("repairment").getAmount()));
 
     }
 }
