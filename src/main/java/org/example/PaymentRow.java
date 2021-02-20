@@ -15,6 +15,6 @@ public class PaymentRow {
     private int clientId;
     private String name;
     private String address;
-    private Date period;
+//    private Date period;
     private Long amount;
 }

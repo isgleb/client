@@ -18,12 +18,6 @@ public class Payment {
     private int clientId;
     private String ownerName;
     private String address;
-    private Date period;
+//    private Date period;
     List<Expense> expenses;
 }
-
-//id": 1,
-//        "clientId": 23,
-//        "ownerName": "Victor",
-//        "address": "Arbat",
-//        "period": null

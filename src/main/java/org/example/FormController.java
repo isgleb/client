@@ -17,24 +17,15 @@ public class FormController implements Initializable {
     private Payment payment;
     private Map<String, TextField> expenses = new HashMap<>();
 
-    @FXML
-    private TextField clientId;
-    @FXML
-    private TextField ownersName;
-    @FXML
-    private TextField address;
-    @FXML
-    private TextField sum;
+    @FXML private TextField clientId;
+    @FXML private TextField ownersName;
+    @FXML private TextField address;
+    @FXML private TextField sum;
 
-
-    @FXML
-    private TextField coldWater;
-    @FXML
-    private TextField hotWater;
-    @FXML
-    private TextField electricity;
-    @FXML
-    private TextField repairment;
+    @FXML private TextField coldWater;
+    @FXML private TextField hotWater;
+    @FXML private TextField electricity;
+    @FXML private TextField repairment;
 
 
     @FXML
@@ -42,11 +33,11 @@ public class FormController implements Initializable {
         App.setRoot("primary");
     }
 
+
     public void transferId(Long id) {
 
         if (id >= 0) {
             orderId = id;
-//            getPaymentDetails(Long id);
         } else {
             orderId = null;
         }
@@ -54,14 +45,17 @@ public class FormController implements Initializable {
         System.out.println(orderId);
     }
 
+
     @FXML
     private void saveChanges() {
-        payment.setClientId(Integer.parseInt(clientId.getAccessibleText()));
-        payment.setAddress(address.getAccessibleText());
-        payment.setOwnerName(ownersName.getAccessibleText());
+
+        payment.setClientId(Integer.parseInt(clientId.getText()));
+        payment.setAddress(address.getText());
+        payment.setOwnerName(ownersName.getText());
+//        payment.setPeriod(new Date());
 
         for (Map.Entry<String, TextField> pair : expenses.entrySet()) {
-            int amount = Integer.parseInt(pair.getValue().getAccessibleText());
+            int amount = Integer.parseInt(pair.getValue().getText());
             for (Expense expense: payment.getExpenses()) {
                 expense.setAmount(amount);
             }
@@ -71,25 +65,6 @@ public class FormController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//
-//        expenseList.add(new Expense(payment.getExpenses()
-//                        Integer.getInteger(coldWater.getAccessibleText()))
-//
-//        payment.setExpenses(new ArrayList<Expense>(new Expense(
-//                Integer.getInteger(coldWater.getAccessibleText()),
-//                Integer.getInteger(hotWater.getAccessibleText()),
-//                Integer.getInteger(electricity.getAccessibleText()),
-//                Integer.getInteger(repairment.getAccessibleText()))
-//        ));
-//
-
-//
-//        payment = HttpController.savePayment(payment);
-//        expenses.forEach(expense -> expense.setPaymentId(payment.getId()));
-//        HttpController.saveExpenses(expenses);
-
-
-
     }
 
     @Override
@@ -107,10 +82,9 @@ public class FormController implements Initializable {
         ownersName.setText(payment.getOwnerName());
         address.setText(payment.getAddress());
 
-
         expenses.put("cold water", coldWater);
         expenses.put("hot water", hotWater);
-        expenses.put("electricity", coldWater);
+        expenses.put("electricity", electricity);
         expenses.put("repairment", repairment);
 
         int totalSum = 0;
@@ -118,13 +92,6 @@ public class FormController implements Initializable {
             expenses.get(anExpense.getName()).setText(String.valueOf(anExpense.getAmount()));
             totalSum += anExpense.amount;
         }
-
         sum.setText(String.valueOf(totalSum));
-
-//        coldWater.setText(String.valueOf(expenses.get("cold water").getAmount()));
-//        hotWater.setText(String.valueOf(expenses.get("hot water").getAmount()));
-//        electricity.setText(String.valueOf(expenses.get("electricity").getAmount()));
-//        repairment.setText(String.valueOf(expenses.get("repairment").getAmount()));
-
     }
 }
