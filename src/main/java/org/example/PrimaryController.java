@@ -34,7 +34,14 @@ public class PrimaryController implements Initializable {
     private void deleteThePayment() throws IOException {
 
         Optional<PaymentRow> selectedRow = Optional.ofNullable(theTable.getSelectionModel().getSelectedItem());
-        selectedRow.ifPresent(row -> HttpController.deletePayment(row.getId()));
+        selectedRow.ifPresent(row -> {
+            try {
+                HttpController.deletePayment(row.getId());
+                theTable.getItems().remove(row);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 

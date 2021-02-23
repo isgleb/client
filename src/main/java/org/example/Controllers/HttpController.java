@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -16,6 +17,9 @@ import org.example.Payment;
 import org.example.PaymentRow;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 public class HttpController {
@@ -42,9 +46,16 @@ public class HttpController {
         }
     }
 
-    public static void deletePayment(Long id) {
+    public static void deletePayment(Long id) throws IOException {
 
-        System.out.println("Payment deleted");
+
+        String deleteEndpoint = baseUrl + "/payments" + "/" + id;
+
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        HttpDelete httpDelete = new HttpDelete(deleteEndpoint);
+        httpclient.execute(httpDelete);
+
     }
 
     public static Payment getPayment(Long id) throws IOException {

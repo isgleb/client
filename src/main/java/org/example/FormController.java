@@ -61,6 +61,9 @@ public class FormController implements Initializable {
             }
         }
         try {
+
+            payment.setId(10L);
+
             HttpController.savePayment(payment);
         } catch (IOException e) {
             e.printStackTrace();
@@ -94,4 +97,5 @@ public class FormController implements Initializable {
         }
         sum.setText(String.valueOf(totalSum));
     }
+
 }
