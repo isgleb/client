@@ -1,5 +1,6 @@
 package org.example;
 
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
@@ -11,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
@@ -21,6 +23,8 @@ import org.example.Controllers.HttpController;
 //import org.example.httpClient.WebClient;
 
 public class PrimaryController implements Initializable {
+
+    Long selectedRowId = null;
 
     @FXML private TableView<PaymentRow> theTable;
     @FXML private TableColumn<PaymentRow, Long> clientIdColumn;
@@ -49,7 +53,13 @@ public class PrimaryController implements Initializable {
     private void switchToThePayment() {
 
         Optional<PaymentRow> selectedRow = Optional.ofNullable(theTable.getSelectionModel().getSelectedItem());
-        selectedRow.ifPresent(payment -> transferToPayment(payment.getId()));
+        selectedRow.ifPresent(payment -> {
+            try {
+                transferToPayment(payment.getId());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 
@@ -76,26 +86,14 @@ public class PrimaryController implements Initializable {
     }
 
 
-    public void transferToPayment(Long id) {
+    public void transferToPayment(Long id) throws IOException {
 
-        Parent root = null;
-
-        try {
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/form.fxml"));
-            root = loader.load();
-
-            FormController formController = loader.getController();
-            formController.transferId(id);
-
-            App.setRoot("form");
-
-        } catch (IOException ex) {
-            System.err.println(ex);
-////            Stage stage = new Stage();
-////            stage.setScene(new Scene(root));
-//            stage.setTitle("Error");
-//            stage.show();
-        }
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/form.fxml"));
+        Parent root = loader.load();
+        FormController formController = loader.getController();
+        formController.makeId(id);
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 }

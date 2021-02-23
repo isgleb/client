@@ -6,11 +6,15 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.example.Controllers.HttpController;
 
-public class FormController implements Initializable {
+public class FormController {
 
     private Long orderId;
 
@@ -30,19 +34,42 @@ public class FormController implements Initializable {
 
     @FXML
     private void switchToPrimary() throws IOException {
-        App.setRoot("primary");
+//        App.setRoot("primary");
+
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/primary.fxml"));
+        Parent root = loader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 
 
-    public void transferId(Long id) {
+    public void makeId(Long id) {
+        orderId = id;
 
-        if (id >= 0) {
-            orderId = id;
-        } else {
-            orderId = null;
+        try {
+            payment = HttpController.getPayment(orderId);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        System.out.println(payment);
 
-        System.out.println(orderId);
+        clientId.setText(String.valueOf(payment.getClientId()));
+        ownersName.setText(payment.getOwnerName());
+        address.setText(payment.getAddress());
+
+        expenses.put("cold water", coldWater);
+        expenses.put("hot water", hotWater);
+        expenses.put("electricity", electricity);
+        expenses.put("repairment", repairment);
+
+        int totalSum = 0;
+        for (Expense anExpense : payment.getExpenses()) {
+            expenses.get(anExpense.getName()).setText(String.valueOf(anExpense.getAmount()));
+            totalSum += anExpense.amount;
+        }
+        sum.setText(String.valueOf(totalSum));
     }
 
 
@@ -69,33 +96,4 @@ public class FormController implements Initializable {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
-        Long id = 1L;
-
-        try {
-            payment = HttpController.getPayment(id);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        clientId.setText(String.valueOf(payment.getClientId()));
-        ownersName.setText(payment.getOwnerName());
-        address.setText(payment.getAddress());
-
-        expenses.put("cold water", coldWater);
-        expenses.put("hot water", hotWater);
-        expenses.put("electricity", electricity);
-        expenses.put("repairment", repairment);
-
-        int totalSum = 0;
-        for (Expense anExpense : payment.getExpenses()) {
-            expenses.get(anExpense.getName()).setText(String.valueOf(anExpense.getAmount()));
-            totalSum += anExpense.amount;
-        }
-        sum.setText(String.valueOf(totalSum));
-    }
-
 }
