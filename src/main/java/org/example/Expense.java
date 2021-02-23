@@ -12,5 +12,5 @@ public class Expense {
     Long id;
     String name;
     int amount;
-    Long paymentId;
+//    Long payment;
 }
