@@ -9,17 +9,12 @@ import java.util.ResourceBundle;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
 
 public class PrimaryController implements Initializable {
@@ -32,7 +27,7 @@ public class PrimaryController implements Initializable {
     @FXML private TableColumn<PaymentRow, Date> periodColumn;
     @FXML private TextField idInput;
 
-    ObservableList<PaymentRow> paymentsList;
+    private ObservableList<PaymentRow> paymentsList;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -44,28 +39,7 @@ public class PrimaryController implements Initializable {
 
         try {
             paymentsList = HttpController.getPaymentRows();
-            FilteredList<PaymentRow> filteredData = new FilteredList<>(paymentsList, p -> true);
-
-            idInput.textProperty().addListener((observable, oldValue, newValue) -> {
-                filteredData.setPredicate(person -> {
-
-                    if (newValue == null || newValue.isEmpty()) {
-                        return true;
-                    }
-
-                    if (newValue.equals(String.valueOf(person.getClientId()))) {
-                        return true;
-                    }
-                    return false;
-                });
-            });
-
-            SortedList<PaymentRow> sortedData = new SortedList<>(filteredData);
-
-            sortedData.comparatorProperty().bind(theTable.comparatorProperty());
-
-            theTable.setItems(sortedData);
-
+            formTheTable();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,30 +54,11 @@ public class PrimaryController implements Initializable {
 
             try {
                 HttpController.deletePayment(row.getId());
+                paymentsList.remove(row);
+                formTheTable();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            paymentsList.remove(row);
-            FilteredList<PaymentRow> filteredData = new FilteredList<>(paymentsList, p -> true);
-
-            idInput.textProperty().addListener((observable, oldValue, newValue) -> {
-                filteredData.setPredicate(person -> {
-
-                    if (newValue == null || newValue.isEmpty()) {
-                        return true;
-                    }
-
-                    if (newValue.equals(String.valueOf(person.getClientId()))) {
-                        return true;
-                    }
-                    return false;
-                });
-            });
-
-            SortedList<PaymentRow> sortedData = new SortedList<>(filteredData);
-            sortedData.comparatorProperty().bind(theTable.comparatorProperty());
-            theTable.setItems(sortedData);
         });
     }
 
@@ -133,4 +88,27 @@ public class PrimaryController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    private void formTheTable() {
+        FilteredList<PaymentRow> filteredData = new FilteredList<>(paymentsList, p -> true);
+
+        idInput.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(person -> {
+
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                if (newValue.equals(String.valueOf(person.getClientId()))) {
+                    return true;
+                }
+                return false;
+            });
+        });
+
+        SortedList<PaymentRow> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(theTable.comparatorProperty());
+        theTable.setItems(sortedData);
+    }
+
 }
