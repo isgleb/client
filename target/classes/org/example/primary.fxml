@@ -27,7 +27,6 @@
             <Button fx:id="editButton" layoutX="115.0" layoutY="87.0" mnemonicParsing="false" onAction="#switchToThePayment" text="редактировать" />
             <Button fx:id="newButton" layoutX="231.0" layoutY="87.0" mnemonicParsing="false" onAction="#switchToNewPayment" text="новый" />
             <TextField fx:id="idInput" layoutX="46.0" layoutY="41.0" promptText="код плательщика" />
-            <Button fx:id="searchButton" layoutX="222.0" layoutY="41.0" mnemonicParsing="false" onAction="#search" text="найти" />
          </children>
       </AnchorPane>
    </children>

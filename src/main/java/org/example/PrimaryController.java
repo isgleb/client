@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,7 +41,29 @@ public class PrimaryController implements Initializable {
         periodColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Date>("period"));
 
         try {
-            theTable.setItems(HttpController.getPaymentRows());
+            ObservableList<PaymentRow> paymentsList = HttpController.getPaymentRows();
+            FilteredList<PaymentRow> filteredData = new FilteredList<>(paymentsList, p -> true);
+
+            idInput.textProperty().addListener((observable, oldValue, newValue) -> {
+                filteredData.setPredicate(person -> {
+
+                    if (newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
+
+                    if (newValue.equals(String.valueOf(person.getClientId()))) {
+                        return true;
+                    }
+                    return false;
+                });
+            });
+
+            SortedList<PaymentRow> sortedData = new SortedList<>(filteredData);
+
+            sortedData.comparatorProperty().bind(theTable.comparatorProperty());
+
+            theTable.setItems(sortedData);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,9 +111,9 @@ public class PrimaryController implements Initializable {
         }
     }
 
-    public void search(ActionEvent actionEvent) {
-
-        int id  = Integer.parseInt(idInput.getText());
-        theTable.getItems().stream().filter(item -> item.getClientId()== id).findAny();
-    }
+//    public void search(ActionEvent actionEvent) {
+//
+//        int id  = Integer.parseInt(idInput.getText());
+//        theTable.getItems().stream().filter(item -> item.getClientId()== id).findAny();
+//    }
 }
