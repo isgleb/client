@@ -71,8 +71,6 @@ public class HttpController {
 
     public static void saveNewPayment(Payment payment) throws IOException {
 
-//        System.out.println(payment);
-
         HttpPost post = new HttpPost(baseUrl + "/payments");
         ObjectMapper objectMapper = new ObjectMapper();
         String message = objectMapper.writeValueAsString(payment);

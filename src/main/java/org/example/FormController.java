@@ -2,15 +2,14 @@ package org.example;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Date;
 import java.util.*;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
+
 
 public class FormController implements Initializable {
 
@@ -22,6 +21,7 @@ public class FormController implements Initializable {
     @FXML private TextField clientId;
     @FXML private TextField ownersName;
     @FXML private TextField address;
+    @FXML private DatePicker date;
     @FXML private TextField sum;
 
     @FXML private TextField coldWater;
@@ -36,39 +36,6 @@ public class FormController implements Initializable {
     }
 
 
-    public void setOrderId(Long id) {
-
-        expenses.put("cold water", coldWater);
-        expenses.put("hot water", hotWater);
-        expenses.put("electricity", electricity);
-        expenses.put("repairment", repairment);
-
-        orderId = Optional.ofNullable(id);
-
-        payment = new Payment();
-
-        if (orderId.isPresent()) {
-
-            try {
-                payment = HttpController.getPayment(orderId.get());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            clientId.setText(String.valueOf(payment.getClientId()));
-            ownersName.setText(payment.getOwnerName());
-            address.setText(payment.getAddress());
-
-            int totalSum = 0;
-            for (Expense anExpense : payment.getExpenses()) {
-                expenses.get(anExpense.getName()).setText(String.valueOf(anExpense.getAmount()));
-                totalSum += anExpense.getAmount();
-            }
-            sum.setText(String.valueOf(totalSum));
-        }
-    }
-
-
     @FXML
     private void saveChanges() {
 
@@ -78,7 +45,7 @@ public class FormController implements Initializable {
 
         payment.setAddress(address.getText());
         payment.setOwnerName(ownersName.getText());
-//        payment.setPeriod(new Date());
+        payment.setPeriod(Date.valueOf(date.getValue()));
 
         if (orderId.isPresent()) {
 
@@ -104,7 +71,7 @@ public class FormController implements Initializable {
                     payment.getExpenses().add(new Expense(name, amount));
                 }
                 HttpController.saveNewPayment(payment);
-                switchToPrimary();
+//                switchToPrimary();
             } catch (IOException e) {
                 e.printStackTrace();
             }

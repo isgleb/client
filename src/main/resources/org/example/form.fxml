@@ -13,6 +13,7 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.DatePicker?>
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.FormController">
     <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="548.0">
         <children>
@@ -60,7 +61,7 @@
                 <TextField fx:id="ownersName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 <TextField fx:id="address" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 <TextField fx:id="sum" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <DatePicker fx:id="date" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             </children>
         </GridPane>
         <GridPane gridLinesVisible="true" layoutX="14.0" layoutY="233.0" prefHeight="142.0" prefWidth="257.0">
