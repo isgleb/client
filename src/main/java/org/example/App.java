@@ -15,6 +15,9 @@ public class App extends Application {
 
     private static Scene scene;
 
+    private static Long PaymentId;
+
+
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("primary"), 640, 480);
@@ -35,4 +38,11 @@ public class App extends Application {
         launch();
     }
 
+    public static Long getPaymentId() {
+        return PaymentId;
+    }
+
+    public static void setPaymentId(Long paymentId) {
+        PaymentId = paymentId;
+    }
 }

@@ -1,16 +1,18 @@
 package org.example;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class FormController {
+public class FormController implements Initializable {
 
     private Optional<Long> orderId;
 
@@ -31,11 +33,7 @@ public class FormController {
     @FXML
     private void switchToPrimary() throws IOException {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/primary.fxml"));
-        Parent root = loader.load();
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.show();
+        App.setRoot("primary");
     }
 
 
@@ -75,7 +73,10 @@ public class FormController {
     @FXML
     private void saveChanges() {
 
-        payment.setClientId(Integer.parseInt(clientId.getText()));
+        try {
+            payment.setClientId(Integer.parseInt(clientId.getText()));
+        } catch (NumberFormatException e) {}
+
         payment.setAddress(address.getText());
         payment.setOwnerName(ownersName.getText());
 //        payment.setPeriod(new Date());
@@ -84,7 +85,9 @@ public class FormController {
 
             try {
                 for (Expense exp : payment.getExpenses()) {
-                    exp.setAmount(Integer.parseInt(expenses.get(exp.getName()).getText()));
+                    try {
+                        exp.setAmount(Integer.parseInt(expenses.get(exp.getName()).getText()));
+                    } catch (NumberFormatException e) {}
                 }
 
                 HttpController.saveChangedPayment(payment);
@@ -105,5 +108,38 @@ public class FormController {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        expenses.put("cold water", coldWater);
+        expenses.put("hot water", hotWater);
+        expenses.put("electricity", electricity);
+        expenses.put("repairment", repairment);
+
+        orderId = Optional.ofNullable(App.getPaymentId());
+
+        payment = new Payment();
+
+        if (orderId.isPresent()) {
+
+            try {
+                payment = HttpController.getPayment(orderId.get());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            clientId.setText(String.valueOf(payment.getClientId()));
+            ownersName.setText(payment.getOwnerName());
+            address.setText(payment.getAddress());
+
+            int totalSum = 0;
+            for (Expense anExpense : payment.getExpenses()) {
+                expenses.get(anExpense.getName()).setText(String.valueOf(anExpense.getAmount()));
+                totalSum += anExpense.getAmount();
+            }
+            sum.setText(String.valueOf(totalSum));
+        }
+
     }
 }

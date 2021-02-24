@@ -28,7 +28,7 @@ public class PrimaryController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        clientIdColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Long>("id"));
+        clientIdColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Long>("clientId"));
         ownerColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, String>("name"));
         addressColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, String>("address"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Integer>("amount"));
@@ -63,7 +63,8 @@ public class PrimaryController implements Initializable {
         Optional<PaymentRow> selectedRow = Optional.ofNullable(theTable.getSelectionModel().getSelectedItem());
         selectedRow.ifPresent(payment -> {
             try {
-                transferToPayment(payment.getId());
+                App.setPaymentId(payment.getId());
+                App.setRoot("form");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -75,21 +76,10 @@ public class PrimaryController implements Initializable {
     private void switchToNewPayment() {
 
         try {
-            transferToPayment(null);
+            App.setPaymentId(null);
+            App.setRoot("form");
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-
-    public void transferToPayment(Long id) throws IOException {
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/form.fxml"));
-        Parent root = loader.load();
-        FormController formController = loader.getController();
-        formController.setOrderId(id);
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.show();
     }
 }
