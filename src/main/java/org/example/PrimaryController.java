@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -13,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
@@ -25,6 +27,7 @@ public class PrimaryController implements Initializable {
     @FXML private TableColumn<PaymentRow, String> addressColumn;
     @FXML private TableColumn<PaymentRow, Integer> amountColumn;
     @FXML private TableColumn<PaymentRow, Date> periodColumn;
+    @FXML private TextField idInput;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -81,5 +84,11 @@ public class PrimaryController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void search(ActionEvent actionEvent) {
+
+        int id  = Integer.parseInt(idInput.getText());
+        theTable.getItems().stream().filter(item -> item.getClientId()== id).findAny();
     }
 }
