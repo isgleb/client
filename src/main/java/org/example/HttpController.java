@@ -5,10 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -90,15 +87,15 @@ public class HttpController {
 
     public static void saveChangedPayment(Payment payment) throws IOException {
 
-        HttpPost post = new HttpPost(baseUrl + "/payments");
+        HttpPut put = new HttpPut(baseUrl + "/payments");
         ObjectMapper objectMapper = new ObjectMapper();
         String message = objectMapper.writeValueAsString(payment);
-        post.setEntity(new StringEntity(message));
-        post.setHeader("Accept", "application/json");
-        post.setHeader("Content-type", "application/json");
+        put.setEntity(new StringEntity(message));
+        put.setHeader("Accept", "application/json");
+        put.setHeader("Content-type", "application/json");
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
-             CloseableHttpResponse response = httpClient.execute(post)){
+             CloseableHttpResponse response = httpClient.execute(put)){
         }
     }
 }

@@ -48,6 +48,8 @@ public class FormController {
 
         orderId = Optional.ofNullable(id);
 
+        payment = new Payment();
+
         if (orderId.isPresent()) {
 
             try {
@@ -73,27 +75,25 @@ public class FormController {
     @FXML
     private void saveChanges() {
 
-        if (orderId.isPresent()) {
-
-
-            System.out.println("change existed");
-
-
-        } else {
-            payment = new Payment();
-
-            payment.setClientId(Integer.parseInt(clientId.getText()));
-            payment.setAddress(address.getText());
-            payment.setOwnerName(ownersName.getText());
+        payment.setClientId(Integer.parseInt(clientId.getText()));
+        payment.setAddress(address.getText());
+        payment.setOwnerName(ownersName.getText());
 //        payment.setPeriod(new Date());
-            payment.setExpenses(new ArrayList<Expense>());
+        payment.setExpenses(new ArrayList<Expense>());
 
-            for (Map.Entry<String, TextField> pair : expenses.entrySet()) {
-                String name = pair.getKey();
-                int amount = Integer.parseInt(pair.getValue().getText());
-                payment.getExpenses().add(new Expense(name, amount));
+        for (Map.Entry<String, TextField> pair : expenses.entrySet()) {
+            String name = pair.getKey();
+            int amount = Integer.parseInt(pair.getValue().getText());
+            payment.getExpenses().add(new Expense(name, amount));
+        }
+
+        if (orderId.isPresent()) {
+            try {
+                HttpController.saveChangedPayment(payment);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
+        } else {
             try {
                 HttpController.saveNewPayment(payment);
             } catch (IOException e) {
