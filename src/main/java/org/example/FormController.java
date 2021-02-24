@@ -79,22 +79,27 @@ public class FormController {
         payment.setAddress(address.getText());
         payment.setOwnerName(ownersName.getText());
 //        payment.setPeriod(new Date());
-        payment.setExpenses(new ArrayList<Expense>());
-
-        for (Map.Entry<String, TextField> pair : expenses.entrySet()) {
-            String name = pair.getKey();
-            int amount = Integer.parseInt(pair.getValue().getText());
-            payment.getExpenses().add(new Expense(name, amount));
-        }
 
         if (orderId.isPresent()) {
+
             try {
+                for (Expense exp : payment.getExpenses()) {
+                    exp.setAmount(Integer.parseInt(expenses.get(exp.getName()).getText()));
+                }
+
                 HttpController.saveChangedPayment(payment);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         } else {
             try {
+                payment.setExpenses(new ArrayList<Expense>());
+                for (Map.Entry<String, TextField> pair : expenses.entrySet()) {
+                    String name = pair.getKey();
+                    int amount = Integer.parseInt(pair.getValue().getText());
+                    payment.getExpenses().add(new Expense(name, amount));
+                }
                 HttpController.saveNewPayment(payment);
             } catch (IOException e) {
                 e.printStackTrace();
