@@ -32,6 +32,8 @@ public class PrimaryController implements Initializable {
     @FXML private TableColumn<PaymentRow, Date> periodColumn;
     @FXML private TextField idInput;
 
+    ObservableList<PaymentRow> paymentsList;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         clientIdColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Long>("clientId"));
@@ -41,7 +43,7 @@ public class PrimaryController implements Initializable {
         periodColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Date>("period"));
 
         try {
-            ObservableList<PaymentRow> paymentsList = HttpController.getPaymentRows();
+            paymentsList = HttpController.getPaymentRows();
             FilteredList<PaymentRow> filteredData = new FilteredList<>(paymentsList, p -> true);
 
             idInput.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -75,12 +77,33 @@ public class PrimaryController implements Initializable {
 
         Optional<PaymentRow> selectedRow = Optional.ofNullable(theTable.getSelectionModel().getSelectedItem());
         selectedRow.ifPresent(row -> {
+
             try {
                 HttpController.deletePayment(row.getId());
-                theTable.getItems().remove(row);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            paymentsList.remove(row);
+            FilteredList<PaymentRow> filteredData = new FilteredList<>(paymentsList, p -> true);
+
+            idInput.textProperty().addListener((observable, oldValue, newValue) -> {
+                filteredData.setPredicate(person -> {
+
+                    if (newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
+
+                    if (newValue.equals(String.valueOf(person.getClientId()))) {
+                        return true;
+                    }
+                    return false;
+                });
+            });
+
+            SortedList<PaymentRow> sortedData = new SortedList<>(filteredData);
+            sortedData.comparatorProperty().bind(theTable.comparatorProperty());
+            theTable.setItems(sortedData);
         });
     }
 
@@ -110,10 +133,4 @@ public class PrimaryController implements Initializable {
             e.printStackTrace();
         }
     }
-
-//    public void search(ActionEvent actionEvent) {
-//
-//        int id  = Integer.parseInt(idInput.getText());
-//        theTable.getItems().stream().filter(item -> item.getClientId()== id).findAny();
-//    }
 }

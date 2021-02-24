@@ -32,7 +32,6 @@ public class FormController implements Initializable {
 
     @FXML
     private void switchToPrimary() throws IOException {
-
         App.setRoot("primary");
     }
 
@@ -91,6 +90,7 @@ public class FormController implements Initializable {
                 }
 
                 HttpController.saveChangedPayment(payment);
+                switchToPrimary();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -104,6 +104,7 @@ public class FormController implements Initializable {
                     payment.getExpenses().add(new Expense(name, amount));
                 }
                 HttpController.saveNewPayment(payment);
+                switchToPrimary();
             } catch (IOException e) {
                 e.printStackTrace();
             }
