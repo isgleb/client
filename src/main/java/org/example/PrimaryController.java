@@ -1,30 +1,23 @@
 package org.example;
 
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import org.example.Controllers.HttpController;
-//import org.example.httpClient.WebClient;
+
 
 public class PrimaryController implements Initializable {
-
-    Long selectedRowId = null;
 
     @FXML private TableView<PaymentRow> theTable;
     @FXML private TableColumn<PaymentRow, Long> clientIdColumn;
@@ -33,9 +26,24 @@ public class PrimaryController implements Initializable {
     @FXML private TableColumn<PaymentRow, Integer> amountColumn;
     @FXML private TableColumn<PaymentRow, Date> periodColumn;
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        clientIdColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Long>("id"));
+        ownerColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, String>("name"));
+        addressColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, String>("address"));
+        amountColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Integer>("amount"));
+        periodColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Date>("period"));
+
+        try {
+            theTable.setItems(HttpController.getPaymentRows());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @FXML
-    private void deleteThePayment() throws IOException {
+    private void deleteThePayment() {
 
         Optional<PaymentRow> selectedRow = Optional.ofNullable(theTable.getSelectionModel().getSelectedItem());
         selectedRow.ifPresent(row -> {
@@ -64,22 +72,10 @@ public class PrimaryController implements Initializable {
 
 
     @FXML
-    private void switchToNewPayment() throws IOException {
-
-        transferToPayment(-1L);
-    }
-
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        clientIdColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Long>("id"));
-        ownerColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, String>("name"));
-        addressColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, String>("address"));
-        amountColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Integer>("amount"));
-        periodColumn.setCellValueFactory(new PropertyValueFactory<PaymentRow, Date>("period"));
+    private void switchToNewPayment() {
 
         try {
-            theTable.setItems(HttpController.getPaymentRows());
+            transferToPayment(null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,7 +87,7 @@ public class PrimaryController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/form.fxml"));
         Parent root = loader.load();
         FormController formController = loader.getController();
-        formController.makeId(id);
+        formController.setOrderId(id);
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.show();

@@ -1,22 +1,18 @@
 package org.example;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
-import java.util.stream.Stream;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.example.Controllers.HttpController;
 
 public class FormController {
 
-    private Long orderId;
+    private Optional<Long> orderId;
 
     private Payment payment;
     private Map<String, TextField> expenses = new HashMap<>();
@@ -34,8 +30,6 @@ public class FormController {
 
     @FXML
     private void switchToPrimary() throws IOException {
-//        App.setRoot("primary");
-
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/primary.fxml"));
         Parent root = loader.load();
@@ -45,55 +39,66 @@ public class FormController {
     }
 
 
-    public void makeId(Long id) {
-        orderId = id;
-
-        try {
-            payment = HttpController.getPayment(orderId);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println(payment);
-
-        clientId.setText(String.valueOf(payment.getClientId()));
-        ownersName.setText(payment.getOwnerName());
-        address.setText(payment.getAddress());
+    public void setOrderId(Long id) {
 
         expenses.put("cold water", coldWater);
         expenses.put("hot water", hotWater);
         expenses.put("electricity", electricity);
         expenses.put("repairment", repairment);
 
-        int totalSum = 0;
-        for (Expense anExpense : payment.getExpenses()) {
-            expenses.get(anExpense.getName()).setText(String.valueOf(anExpense.getAmount()));
-            totalSum += anExpense.amount;
+        orderId = Optional.ofNullable(id);
+
+        if (orderId.isPresent()) {
+
+            try {
+                payment = HttpController.getPayment(orderId.get());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            clientId.setText(String.valueOf(payment.getClientId()));
+            ownersName.setText(payment.getOwnerName());
+            address.setText(payment.getAddress());
+
+            int totalSum = 0;
+            for (Expense anExpense : payment.getExpenses()) {
+                expenses.get(anExpense.getName()).setText(String.valueOf(anExpense.getAmount()));
+                totalSum += anExpense.getAmount();
+            }
+            sum.setText(String.valueOf(totalSum));
         }
-        sum.setText(String.valueOf(totalSum));
     }
 
 
     @FXML
     private void saveChanges() {
 
-        payment.setClientId(Integer.parseInt(clientId.getText()));
-        payment.setAddress(address.getText());
-        payment.setOwnerName(ownersName.getText());
+        if (orderId.isPresent()) {
+
+
+            System.out.println("change existed");
+
+
+        } else {
+            payment = new Payment();
+
+            payment.setClientId(Integer.parseInt(clientId.getText()));
+            payment.setAddress(address.getText());
+            payment.setOwnerName(ownersName.getText());
 //        payment.setPeriod(new Date());
+            payment.setExpenses(new ArrayList<Expense>());
 
-        for (Map.Entry<String, TextField> pair : expenses.entrySet()) {
-            int amount = Integer.parseInt(pair.getValue().getText());
-            for (Expense expense: payment.getExpenses()) {
-                expense.setAmount(amount);
+            for (Map.Entry<String, TextField> pair : expenses.entrySet()) {
+                String name = pair.getKey();
+                int amount = Integer.parseInt(pair.getValue().getText());
+                payment.getExpenses().add(new Expense(name, amount));
             }
-        }
-        try {
 
-            payment.setId(10L);
-
-            HttpController.savePayment(payment);
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                HttpController.saveNewPayment(payment);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

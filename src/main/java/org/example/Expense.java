@@ -9,8 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Expense {
 
-    Long id;
-    String name;
-    int amount;
-//    Long payment;
+    private Long id;
+    private String name;
+    private int amount;
+
+    public Expense(String name, int amount) {
+        this.name = name;
+        this.amount = amount;
+    }
 }

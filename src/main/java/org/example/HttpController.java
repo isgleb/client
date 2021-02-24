@@ -1,4 +1,4 @@
-package org.example.Controllers;
+package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.collections.FXCollections;
@@ -26,36 +26,33 @@ public class HttpController {
 
     private static String baseUrl = "http://localhost:8080";
 
+
     public static ObservableList<PaymentRow> getPaymentRows() throws IOException {
 
         HttpGet httpget = new HttpGet(baseUrl + "/payments-row-dtos");
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse httpresponse = httpClient.execute(httpget)) {
-        HttpEntity httpEntity = httpresponse.getEntity();
 
+        HttpEntity httpEntity = httpresponse.getEntity();
         String responseString = EntityUtils.toString(httpEntity, "UTF-8");
 
         ObjectMapper mapper = new ObjectMapper();
-
         PaymentRow[] paymentRows = mapper.readValue(responseString, PaymentRow[].class);
-
         ObservableList<PaymentRow> observableList = FXCollections.observableArrayList(paymentRows);
 
         return observableList;
         }
     }
 
-    public static void deletePayment(Long id) throws IOException {
 
+    public static void deletePayment(Long id) throws IOException {
 
         String deleteEndpoint = baseUrl + "/payments" + "/" + id;
 
         CloseableHttpClient httpclient = HttpClients.createDefault();
-
         HttpDelete httpDelete = new HttpDelete(deleteEndpoint);
         httpclient.execute(httpDelete);
-
     }
 
     public static Payment getPayment(Long id) throws IOException {
@@ -75,7 +72,23 @@ public class HttpController {
         }
     }
 
-    public static void savePayment(Payment payment) throws IOException {
+    public static void saveNewPayment(Payment payment) throws IOException {
+
+//        System.out.println(payment);
+
+        HttpPost post = new HttpPost(baseUrl + "/payments");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String message = objectMapper.writeValueAsString(payment);
+        post.setEntity(new StringEntity(message));
+        post.setHeader("Accept", "application/json");
+        post.setHeader("Content-type", "application/json");
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+             CloseableHttpResponse response = httpClient.execute(post)){
+        }
+    }
+
+    public static void saveChangedPayment(Payment payment) throws IOException {
 
         HttpPost post = new HttpPost(baseUrl + "/payments");
         ObjectMapper objectMapper = new ObjectMapper();
